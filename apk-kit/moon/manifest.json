@@ -1,0 +1,26 @@
+{
+    "name":  "小月亮",
+    "short_name":  "小月亮",
+    "description":  "管理原创角色 OC 的资料、锚点、图片、文章、关系网与世界观的离线工具。",
+    "lang":  "zh-CN",
+    "dir":  "ltr",
+    "start_url":  "./",
+    "scope":  "./",
+    "display":  "standalone",
+    "orientation":  "portrait",
+    "background_color":  "#f7f5fb",
+    "theme_color":  "#7c5cff",
+    "icons":  [
+                  {
+                      "type":  "image/png",
+                      "sizes":  "192x192",
+                      "src":  "icon-192.png"
+                  },
+                  {
+                      "purpose":  "any maskable",
+                      "type":  "image/png",
+                      "sizes":  "512x512",
+                      "src":  "icon-512.png"
+                  }
+              ]
+}
