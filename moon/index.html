@@ -1,0 +1,1046 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5fb">
+<title>小月亮</title>
+<style>
+:root{--bg:#f7f5fb;--card-rgb:255,255,255;--alpha:.95;--txt:#1e1b2b;--sub:#8d8aa0;--line:#eeecf4;--accent:#7c5cff;--accent2:#b39dff}
+html.dark{--card-rgb:38,36,48;--txt:#efedf7;--sub:#9d97b0;--line:#332f42}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--txt);font:15px/1.5 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background-size:cover;background-position:center;background-attachment:fixed;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+button,input,textarea,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+.card{background:rgba(var(--card-rgb),var(--alpha));border-radius:15px;padding:12px;margin-bottom:11px;box-shadow:0 1px 3px rgba(40,30,80,.05)}
+.tiny{font-size:11px;color:var(--sub)}
+.muted{color:var(--sub);font-size:13px}
+.row{display:flex;align-items:center;gap:8px}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.btn{border:0;border-radius:11px;min-height:36px;padding:2px 12px;background:rgba(124,92,255,.12);color:var(--accent);font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.btn.solid{background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--sub)}
+.btn.danger{background:#fdecec;color:#c0473e}
+.btn.block{display:flex;width:100%;min-height:44px;margin-top:8px}
+.ib{border:0;background:rgba(var(--card-rgb),.9);border-radius:10px;min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;color:var(--sub)}
+#top{position:sticky;top:0;z-index:20;background:rgba(var(--card-rgb),.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+#top .in{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:9px 14px}
+#top .ti{flex:1;font-size:17px;font-weight:800;letter-spacing:-.3px}
+#top .ti em{font-style:normal;font-size:11.5px;color:var(--sub);font-weight:500;margin-left:5px}
+main{max-width:640px;margin:0 auto;padding:12px 14px 92px}
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(var(--card-rgb),.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+#tabs .in{max-width:640px;margin:0 auto;display:flex}
+.tb{flex:1;border:0;background:transparent;padding:8px 0 9px;font-size:9.5px;color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:2px}
+.tb .ic{font-size:18px;line-height:1}
+.tb.on{color:var(--accent);font-weight:800}
+
+/* OC 卡片 */
+.stats{display:flex;gap:8px;margin-bottom:10px}
+.stat{flex:1;background:rgba(var(--card-rgb),.9);border-radius:13px;padding:9px 6px;text-align:center}
+.stat b{display:block;font-size:17px;font-weight:800}
+.stat span{font-size:10px;color:var(--sub)}
+.ocgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.occard{background:rgba(var(--card-rgb),.95);border-radius:15px;overflow:hidden;box-shadow:0 2px 6px rgba(40,30,80,.07);position:relative}
+.av{height:104px;position:relative;display:flex;align-items:center;justify-content:center;font-size:34px;background-size:cover;background-position:center}
+.ring{position:absolute;right:6px;top:6px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:rgba(255,255,255,.94)}
+.ring b{position:relative;z-index:2;font-size:8px;color:#4a3f7a;font-weight:800}
+.occard .info{padding:7px 9px 10px}
+.occard .nm{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.occard .sub{font-size:10px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.tag{font-size:9px;padding:1px 5px;border-radius:5px;background:rgba(124,92,255,.12);color:#6b53c9}
+.tag.warn{background:#fff4e6;color:#b5751c}
+.tag.ok{background:#e9f8f2;color:#1f8f6f}
+.empty{text-align:center;color:var(--sub);padding:36px 10px;font-size:13px}
+
+/* 详情页 */
+#page{position:fixed;inset:0;z-index:60;background:var(--bg);overflow:auto;padding-bottom:40px}
+#page .ph{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:9px 14px;background:rgba(var(--card-rgb),.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+#page .ph .tt{flex:1;text-align:center;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#page .pb{max-width:640px;margin:0 auto;padding:12px 14px}
+.cover{height:120px;position:relative;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:10px;background-color:#d9cff5}
+.cover .bigav{width:64px;height:64px;border-radius:50%;background-size:cover;background-position:center;background-color:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 10px rgba(40,30,80,.2)}
+.cover .meta{margin-left:9px;padding-bottom:3px}
+.cover .meta b{font-size:17px;text-shadow:0 1px 3px rgba(255,255,255,.6)}
+.cover .meta div{font-size:11px;color:#4a4560}
+.ct{display:flex;gap:4px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.ct::-webkit-scrollbar{display:none}
+.ct button{flex:none;border:0;background:rgba(var(--card-rgb),.9);border-radius:9px;padding:6px 11px;font-size:12px;color:var(--sub)}
+.ct button.on{background:var(--accent);color:#fff;font-weight:700}
+.fbox{background:rgba(var(--card-rgb),.7);border:1px solid var(--line);border-radius:10px;padding:7px 9px;margin-bottom:7px}
+.fbox label{display:block;font-size:10px;color:var(--sub)}
+.fbox b{font-size:14px;font-weight:600}
+.blk{background:rgba(var(--card-rgb),.75);border:1px solid var(--line);border-radius:11px;padding:9px 10px;margin-bottom:8px;font-size:14px;line-height:1.7;white-space:pre-wrap}
+.blk .lb{font-size:10px;color:var(--sub);margin-bottom:3px;white-space:normal}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.prow .pn{width:64px;font-size:12px;color:#4a4560}
+.pbar{flex:1;height:6px;border-radius:3px;background:rgba(124,92,255,.12);overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.prow .pv{font-size:11px;color:var(--sub);width:28px;text-align:right}
+.anchors{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.anchor{width:104px;flex:none;background:rgba(var(--card-rgb),.95);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(40,30,80,.07)}
+.anchor .im{height:74px;background-size:cover;background-position:center;background-color:#ece8f8;display:flex;align-items:center;justify-content:center;font-size:20px;color:#c3b8e6}
+.anchor .tx{padding:5px 6px 7px}
+.anchor .tx b{display:block;font-size:11px;line-height:1.35}
+.anchor .tx span{font-size:9.5px;color:var(--sub);display:block;margin-top:2px}
+.anchor.add{display:flex;align-items:center;justify-content:center;color:#b0a6d4;font-size:20px;border:1px dashed #d9cff5;background:rgba(var(--card-rgb),.6);box-shadow:none}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ph3{position:relative;aspect-ratio:1/1;border-radius:10px;background-size:cover;background-position:center;background-color:#ece8f8}
+.ph3 .x{position:absolute;right:4px;top:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:12px;border:0;line-height:20px;text-align:center}
+.addtile{aspect-ratio:1/1;border-radius:10px;border:1px dashed #d9cff5;display:flex;align-items:center;justify-content:center;font-size:20px;color:#b0a6d4;background:rgba(var(--card-rgb),.6)}
+.post{display:flex;gap:9px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.post:last-child{border-bottom:0}
+.pt{width:40px;height:48px;border-radius:8px;background:linear-gradient(160deg,#efe4ff,#ffd9ec);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+.post .pi{flex:1;min-width:0}
+.post .pi b{font-size:13.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl{position:relative;padding-left:18px}
+.tl::before{content:"";position:absolute;left:4px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--accent2),#ffd0e6)}
+.tli{position:relative;padding:0 0 12px 5px}
+.tli::before{content:"";position:absolute;left:-18px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2.5px rgb(var(--card-rgb))}
+.tli .e{font-size:10px;color:var(--accent);font-weight:700}
+.tli .d{font-size:12.5px;margin-top:1px}
+.tli .x{border:0;background:transparent;color:var(--sub);font-size:11px;padding:0 2px}
+
+/* 弹层 */
+#mask{position:fixed;inset:0;background:rgba(15,12,25,.42);z-index:80;display:flex;align-items:flex-end;justify-content:center}
+#sheet{background:rgb(var(--card-rgb));width:100%;max-width:640px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:14px 14px calc(22px + env(safe-area-inset-bottom));animation:up .2s ease}
+@keyframes up{from{transform:translateY(26px);opacity:.5}to{transform:none;opacity:1}}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sh b{font-size:16px}
+.f{margin-bottom:9px}
+.f label{display:block;font-size:11.5px;color:var(--sub);margin-bottom:3px}
+.inp{width:100%;border:1px solid var(--line);background:rgba(var(--card-rgb),.6);border-radius:11px;padding:9px 11px;outline:none;font-size:14.5px}
+.inp:focus{border-color:var(--accent)}
+textarea.inp{min-height:80px;line-height:1.6;resize:vertical}
+.sws{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);padding:0}
+.sw.on{box-shadow:0 0 0 2px var(--accent)}
+input[type=color]{width:38px;height:32px;border:1px solid var(--line);border-radius:9px;padding:2px;background:transparent}
+#toast{position:fixed;left:50%;bottom:80px;transform:translate(-50%,10px);background:rgba(30,27,43,.93);color:#fff;padding:9px 14px;border-radius:11px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:86vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* 关系网 */
+.net{position:relative;height:380px;border-radius:14px;background:radial-gradient(circle at 50% 45%,#fdfcff,#f4f0ff 70%);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;touch-action:none}
+.net svg{position:absolute;inset:0;width:100%;height:100%}
+.netcv{position:absolute;inset:0;width:100%;height:100%}
+.nd{position:absolute;transform:translate(-50%,-50%);text-align:center;width:70px}
+.nd .c{width:48px;height:48px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:20px;border:2.5px solid #fff;box-shadow:0 3px 8px rgba(40,30,80,.18);background-size:cover;background-position:center;background-color:#e8e2f8}
+.nd .n{font-size:10px;margin-top:2px;font-weight:700;color:#3f3a55}
+.nd.sel .c{box-shadow:0 0 0 4px rgba(124,92,255,.28),0 4px 10px rgba(40,30,80,.2)}
+
+/* 换衣间 */
+.stagearea{position:relative;border-radius:14px;background:linear-gradient(180deg,#fff,#f6f2ff);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.stagearea .cv{position:relative;width:100%;aspect-ratio:1000/1200;max-height:46vh}
+.stagearea .cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.guide{position:absolute;inset:6%;border:1px dashed #d9cff5;border-radius:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:6px 0}
+.chip{flex:none;border:0;background:rgba(var(--card-rgb),.9);border-radius:10px;padding:5px 10px;font-size:12px;color:var(--sub)}
+.chip.on{background:var(--accent);color:#fff;font-weight:700}
+.parts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:4px}
+.part{aspect-ratio:1/1;border-radius:11px;border:1px solid var(--line);background:rgba(var(--card-rgb),.90) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:18px;color:#c3b8e6;position:relative}
+.part.on{box-shadow:0 0 0 2px var(--accent)}
+.part .del{position:absolute;right:2px;top:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:11px;border:0;line-height:18px}
+</style>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+<div id="top"><div class="in">
+  <div class="ti" id="topTitle">小月亮<em>我的 OC</em></div>
+  <button class="ib" id="btnTools">⚙</button>
+  <button class="ib" id="btnAdd" style="background:var(--accent);color:#fff">＋</button>
+</div></div>
+
+<main>
+  <section id="v-oc">
+    <div class="stats" id="ocStats"></div>
+    <div class="ocgrid" id="ocGrid"></div>
+  </section>
+
+  <section id="v-album" class="hidden">
+    <div class="spread" style="margin-bottom:10px"><b>合集</b><button class="btn" id="albumAdd">＋ 新建合集</button></div>
+    <div class="tiny" style="margin-bottom:8px">多人图、企划图、场景参考放这里，名字可以改</div>
+    <div id="albumList"></div>
+  </section>
+
+  <section id="v-dress" class="hidden">
+    <div class="spread" style="margin-bottom:8px"><b>换衣间</b><span class="tiny">建议 1000 × 1200 · 透明 PNG</span></div>
+    <div class="stagearea"><div class="cv" id="dressCanvas"><div class="guide"></div></div></div>
+    <div class="chips" id="dressCats"></div>
+    <div class="card">
+      <div class="spread"><b style="font-size:14px" id="partTitle">发型</b><button class="btn" id="partAdd">＋ 上传部位图</button></div>
+      <div class="parts" id="partGrid"></div>
+    </div>
+    <div class="row" style="gap:8px">
+      <button class="btn block" id="dressReset" style="margin:0">重置</button>
+      <button class="btn solid block" id="dressSave" style="margin:0">保存成图</button>
+    </div>
+  </section>
+
+  <section id="v-world" class="hidden">
+    <div class="spread" style="margin-bottom:10px"><b>世界观</b><button class="btn" id="worldAdd">＋ 新建世界</button></div>
+    <div id="worldList"></div>
+  </section>
+</main>
+
+<nav id="tabs"><div class="in">
+  <button class="tb on" data-v="oc"><span class="ic">🌙</span>OC</button>
+  <button class="tb" data-v="album"><span class="ic">🖼</span>合集</button>
+  <button class="tb" data-v="dress"><span class="ic">👗</span>换衣间</button>
+  <button class="tb" data-v="world"><span class="ic">🌍</span>世界</button>
+</div></nav>
+
+<div id="page" class="hidden"></div>
+<div id="mask" class="hidden"><div id="sheet"></div></div>
+<div id="toast"></div>
+
+<input type="file" id="fileImg" accept="image/*" multiple class="hidden">
+<input type="file" id="fileJson" accept=".json,application/json" class="hidden">
+
+<script>
+'use strict';
+/* ============ 基础 ============ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const TODAY = () => ymd(new Date());
+const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtD = ts => { const d = new Date(ts); return (d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const COLORS = ['#7c5cff', '#ff8ab8', '#4fc3a1', '#f6a23c', '#6b9cff', '#8d8aa0'];
+
+let toastT = null;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2000); }
+
+/* ============ 存储 ============ */
+let DB = null, MEM = false;
+function openDB() {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('no idb'));
+    let r; try { r = indexedDB.open('moon-db', 1); } catch (e) { return rej(e); }
+    r.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+      if (!db.objectStoreNames.contains('media')) db.createObjectStore('media');
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+const done = t => new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
+const rq = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+async function kvGet(k) { if (MEM) { const v = localStorage.getItem('M.' + k); return v ? JSON.parse(v) : null; } return rq(DB.transaction('kv', 'readonly').objectStore('kv').get(k)); }
+async function kvPut(k, v) { if (MEM) { localStorage.setItem('M.' + k, JSON.stringify(v)); return; } const t = DB.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); await done(t); }
+async function mediaPut(id, blob) { if (MEM) throw new Error('浏览器不支持本地存储'); const t = DB.transaction('media', 'readwrite'); t.objectStore('media').put(blob, id); await done(t); }
+async function mediaGet(id) { if (MEM) return null; return rq(DB.transaction('media', 'readonly').objectStore('media').get(id)); }
+async function mediaDel(id) { if (MEM) return; const t = DB.transaction('media', 'readwrite'); t.objectStore('media').delete(id); await done(t); }
+async function mediaKeys() { if (MEM) return []; return rq(DB.transaction('media', 'readonly').objectStore('media').getAllKeys()); }
+
+/* ============ 状态 ============ */
+const DEF = () => ({
+  v: 1, ocs: [], albums: [], worlds: [], articles: [], relations: [], parts: [], outfit: {},
+  history: [], theme: { bg: '#f7f5fb', accent: '#7c5cff', alpha: .95, dark: false, bgImg: null },
+  lastSaved: 0
+});
+let S = DEF();
+let saveT = null;
+function save() { clearTimeout(saveT); saveT = setTimeout(async () => { S.lastSaved = Date.now(); try { await kvPut('main', S); } catch (e) { toast('保存失败：' + e.message); } }, 150); }
+function log(text, ref) { S.history.unshift({ t: Date.now(), text: text, ref: ref || '' }); if (S.history.length > 400) S.history.length = 400; }
+
+const urls = new Map();
+async function mediaURL(id) {
+  if (!id) return '';
+  if (urls.has(id)) return urls.get(id);
+  const b = await mediaGet(id); if (!b) return '';
+  const u = URL.createObjectURL(b); urls.set(id, u); return u;
+}
+async function urlOf(id) { return id ? await mediaURL(id) : ''; }
+
+/* ============ 主题 ============ */
+function applyTheme() {
+  const t = S.theme, r = document.documentElement;
+  r.style.setProperty('--bg', t.bg);
+  r.style.setProperty('--accent', t.accent);
+  r.style.setProperty('--alpha', t.alpha);
+  r.classList.toggle('dark', !!t.dark);
+  document.body.style.backgroundColor = t.bg;
+  if (t.bgImg) mediaURL(t.bgImg).then(u => { if (u) document.body.style.backgroundImage = 'linear-gradient(' + (t.dark ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.55)') + ',' + (t.dark ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.55)') + '),url("' + u + '")'; });
+  else document.body.style.backgroundImage = 'none';
+}
+
+/* ============ 图片工具 ============ */
+let fileCb = null;
+function pickImage(cb, multi) { fileCb = cb; $('#fileImg').multiple = multi ? 'multiple' : ''; $('#fileImg').click(); }
+$('#fileImg').onchange = async e => {
+  const files = Array.from(e.target.files || []); e.target.value = '';
+  if (!files.length || !fileCb) return;
+  const out = [];
+  for (const f of files) { const b = await compress(f); out.push(b); }
+  const cb = fileCb; fileCb = null; cb(out);
+};
+async function compress(file, max = 1400, q = .84) {
+  try {
+    let bmp;
+    try { bmp = await createImageBitmap(file); } catch (e) {
+      bmp = await new Promise((res, rej) => { const im = new Image(); const u = URL.createObjectURL(file); im.onload = () => { URL.revokeObjectURL(u); res(im); }; im.onerror = rej; im.src = u; });
+    }
+    const w0 = bmp.width, h0 = bmp.height, s = Math.min(1, max / Math.max(w0, h0));
+    const c = document.createElement('canvas'); c.width = Math.round(w0 * s); c.height = Math.round(h0 * s);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    return await new Promise(r => c.toBlob(r, 'image/jpeg', q)) || file;
+  } catch (e) { return file; }
+}
+async function saveImage(blob) { const id = uid(); await mediaPut(id, blob); return id; }
+
+/* ============ 通用弹层 ============ */
+function openSheet(html) { $('#sheet').innerHTML = html; $('#mask').classList.remove('hidden'); $$('#sheet [data-x]').forEach(b => b.onclick = closeSheet); }
+function closeSheet() { $('#mask').classList.add('hidden'); $('#sheet').innerHTML = ''; }
+$('#mask').onclick = e => { if (e.target.id === 'mask') closeSheet(); };
+function openPage(html) { const p = $('#page'); p.classList.remove('hidden'); p.scrollTop = 0; p.innerHTML = html; }
+function closePage() { const p = $('#page'); p.classList.add('hidden'); p.innerHTML = ''; }
+
+/* ============ 百分比 ============ */
+function progOf(oc) {
+  const p = oc.prog || {};
+  const v = [p.model || 0, p.art || 0, p.life || 0, p.detail || 0];
+  return Math.round(v.reduce((a, b) => a + b, 0) / 4);
+}
+function ringCss(v) { return 'conic-gradient(#fff 0 ' + v + '%,rgba(255,255,255,.25) ' + v + '% 100%)'; }
+
+/* ============ OC 列表 ============ */
+function renderOC() {
+  const list = S.ocs;
+  const avg = list.length ? Math.round(list.reduce((a, o) => a + progOf(o), 0) / list.length) : 0;
+  const todo = list.filter(o => progOf(o) < 100).length;
+  $('#ocStats').innerHTML =
+    '<div class="stat"><b>' + list.length + '</b><span>个 OC</span></div>' +
+    '<div class="stat"><b>' + avg + '%</b><span>平均完成</span></div>' +
+    '<div class="stat"><b style="color:#d1841f">' + todo + '</b><span>待补设定</span></div>';
+  const g = $('#ocGrid');
+  if (!list.length) { g.innerHTML = '<div class="empty" style="grid-column:1/-1">还没有 OC，点右上角 ＋ 建第一个</div>'; return; }
+  g.innerHTML = list.map(o => {
+    const v = progOf(o), kws = (o.keywords || []).slice(0, 3);
+    return '<div class="occard" data-id="' + o.id + '">' +
+      '<div class="av" data-av="' + (o.avatar || '') + '" style="background:linear-gradient(135deg,' + (o.color || COLORS[0]) + ',rgba(255,255,255,.35))">' + (o.avatar ? '' : '🌙') +
+      '<div class="ring" style="background:' + ringCss(v) + '"><b>' + v + '</b></div></div>' +
+      '<div class="info"><div class="nm">' + esc(o.name || '未命名') + '</div>' +
+      '<div class="sub">' + esc(o.alias || '') + '</div>' +
+      '<div class="tags">' + kws.map(k => '<span class="tag">' + esc(k) + '</span>').join('') + '</div></div></div>';
+  }).join('');
+  $$('#ocGrid .occard').forEach(c => c.onclick = () => openOC(c.dataset.id));
+  $$('#ocGrid .av[data-av]').forEach(el => { const id = el.dataset.av; if (id) urlOf(id).then(u => { if (u) el.style.backgroundImage = 'url("' + u + '")'; }); });
+}
+
+/* ============ 新建 / 编辑 OC ============ */
+function editOC(id) {
+  const o = id ? S.ocs.find(x => x.id === id) : { name: '', alias: '', age: '', birth: '', height: '', keywords: [], color: COLORS[0], worldId: '' };
+  const worlds = S.worlds.map(w => '<option value="' + w.id + '"' + (o.worldId === w.id ? ' selected' : '') + '>' + esc(w.name) + '</option>').join('');
+  openSheet('<div class="sh"><b>' + (id ? '编辑 OC' : '新建 OC') + '</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>姓名</label><input class="inp" id="fName" value="' + esc(o.name) + '"></div>' +
+    '<div class="f"><label>别名</label><input class="inp" id="fAlias" value="' + esc(o.alias || '') + '"></div>' +
+    '<div class="row" style="gap:8px"><div class="f" style="flex:1"><label>年龄</label><input class="inp" id="fAge" value="' + esc(o.age || '') + '"></div>' +
+    '<div class="f" style="flex:1"><label>出生年月</label><input class="inp" id="fBirth" value="' + esc(o.birth || '') + '"></div></div>' +
+    '<div class="f"><label>身高</label><input class="inp" id="fHeight" value="' + esc(o.height || '') + '"></div>' +
+    '<div class="f"><label>关键词（回车添加，逗号也行）</label><input class="inp" id="fKw" value="' + esc((o.keywords || []).join(' ')) + '" placeholder="月族 三无 左眼异能"></div>' +
+    '<div class="f"><label>所属世界</label><select class="inp" id="fWorld"><option value="">（不归属）</option>' + worlds + '</select></div>' +
+    '<div class="f"><label>主题色</label><div class="sws" id="fColors">' + COLORS.map(c => '<button class="sw' + (c === o.color ? ' on' : '') + '" style="background:' + c + '" data-c="' + c + '"></button>').join('') + '</div></div>' +
+    '<button class="btn solid block" id="fSave">保存</button>' +
+    (id ? '<button class="btn danger block" id="fDel">删除这只 OC</button>' : ''));
+  let color = o.color;
+  $$('#fColors .sw').forEach(b => b.onclick = () => { color = b.dataset.c; $$('#fColors .sw').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#fSave').onclick = () => {
+    const name = $('#fName').value.trim();
+    if (!name) return toast('先写个名字');
+    const data = {
+      name: name, alias: $('#fAlias').value.trim(), age: $('#fAge').value.trim(), birth: $('#fBirth').value.trim(),
+      height: $('#fHeight').value.trim(), color: color, worldId: $('#fWorld').value,
+      keywords: $('#fKw').value.split(/[\s,，]+/).filter(Boolean).slice(0, 12)
+    };
+    if (id) { Object.assign(o, data, { updatedAt: Date.now() }); log('编辑 OC「' + name + '」', id); }
+    else {
+      S.ocs.push(Object.assign({ id: uid(), bio: '', detail: '', anchors: [], photos: [], publish: [], timeline: [], prog: { model: 0, art: 0, life: 0, detail: 0 }, createdAt: Date.now(), updatedAt: Date.now() }, data));
+      log('新建 OC「' + name + '」');
+    }
+    save(); closeSheet(); renderOC();
+  };
+  if (id) $('#fDel').onclick = () => {
+    if (!confirm('删除「' + o.name + '」？相关图片和文章也会删掉。')) return;
+    S.ocs = S.ocs.filter(x => x.id !== id);
+    S.relations = S.relations.filter(r => r.a !== id && r.b !== id);
+    log('删除 OC「' + o.name + '」');
+    save(); closeSheet(); closePage(); renderOC();
+  };
+}
+
+/* ============ OC 详情 ============ */
+let curOC = null, curTab = 'info';
+function openOC(id) {
+  curOC = S.ocs.find(x => x.id === id); if (!curOC) return;
+  curOC.anchors = curOC.anchors || []; curOC.photos = curOC.photos || []; curOC.publish = curOC.publish || []; curOC.timeline = curOC.timeline || []; curOC.prog = curOC.prog || { model: 0, art: 0, life: 0, detail: 0 };
+  curTab = 'info'; renderOCPage();
+}
+function renderOCPage() {
+  const o = curOC;
+  const w = S.worlds.find(x => x.id === o.worldId);
+  openPage('<div class="ph"><button class="ib" id="pBack">‹</button><div class="tt">' + esc(o.name) + '</div><button class="ib" id="pMore">⋯</button></div>' +
+    '<div class="cover" id="oCover"><div class="bigav" id="oAvatar">' + (o.avatar ? '' : '🌙') + '</div>' +
+    '<div class="meta"><b>' + esc(o.name) + '</b><div>' + esc(o.alias || '') + (o.age ? ' · ' + esc(o.age) + ' 岁' : '') + (w ? ' · ' + esc(w.name) : '') + '</div></div></div>' +
+    '<div class="pb">' +
+    '<div class="tags" style="margin-bottom:6px">' + (w ? '<span class="tag ok">🌍 ' + esc(w.name) + '</span>' : '') + (o.keywords || []).map(k => '<span class="tag">#' + esc(k) + '</span>').join('') + '</div>' +
+    '<div class="ct">' + [['info', '资料'], ['anchor', '锚点'], ['photo', '图片'], ['article', '文章'], ['rel', '关系'], ['time', '年表'], ['pub', '发布']].map(t => '<button data-t="' + t[0] + '"' + (curTab === t[0] ? ' class="on"' : '') + '>' + t[1] + '</button>').join('') + '</div>' +
+    '<div id="tabBody"></div></div>');
+  $('#pBack').onclick = () => { closePage(); renderOC(); };
+  $('#pMore').onclick = () => ocMenu();
+  $$('.ct button').forEach(b => b.onclick = () => { curTab = b.dataset.t; renderOCPage(); });
+  const cover = $('#oCover'), av = $('#oAvatar');
+  if (o.cover) urlOf(o.cover).then(u => { if (u) cover.style.backgroundImage = 'url("' + u + '")'; });
+  if (o.avatar) urlOf(o.avatar).then(u => { if (u) { av.style.backgroundImage = 'url("' + u + '")'; av.textContent = ''; } });
+  cover.onclick = () => pickImage(async bs => { o.cover = await saveImage(bs[0]); save(); renderOCPage(); toast('封面已更新'); });
+  av.onclick = e => { e.stopPropagation(); pickImage(async bs => { o.avatar = await saveImage(bs[0]); save(); renderOCPage(); toast('头像已更新'); }); };
+  renderTab();
+}
+
+function renderTab() {
+  const o = curOC, b = $('#tabBody');
+  if (curTab === 'info') {
+    const v = progOf(o);
+    b.innerHTML =
+      '<div class="row" style="gap:7px"><div class="fbox" style="flex:1"><label>姓名</label><b>' + esc(o.name) + '</b></div><div class="fbox" style="flex:1"><label>年龄</label><b>' + esc(o.age || '—') + '</b></div></div>' +
+      '<div class="row" style="gap:7px"><div class="fbox" style="flex:1"><label>出生年月</label><b>' + esc(o.birth || '—') + '</b></div><div class="fbox" style="flex:1"><label>身高</label><b>' + esc(o.height || '—') + '</b></div></div>' +
+      '<div class="blk"><div class="lb">简介</div>' + (esc(o.bio) || '<span class="muted">还没写</span>') + '</div>' +
+      '<div class="blk"><div class="lb">详细设定</div>' + (esc(o.detail) || '<span class="muted">还没写</span>') + '</div>' +
+      '<div class="card"><div class="spread" style="margin-bottom:7px"><b style="font-size:14px">完成进度</b><span class="tiny">' + v + '%</span></div>' +
+      [['model', '三视图'], ['art', '人物立绘'], ['life', '人生经历'], ['detail', '详细设定']].map(p =>
+        '<div class="prow"><span class="pn">' + p[1] + '</span><div class="pbar"><i style="width:' + (o.prog[p[0]] || 0) + '%"></i></div><span class="pv">' + (o.prog[p[0]] || 0) + '</span></div>').join('') +
+      '<button class="btn block" id="progEdit">调整进度</button></div>' +
+      '<button class="btn block" id="editInfo" style="margin-top:0">编辑资料 / 简介 / 设定</button>';
+    $('#editInfo').onclick = () => editDetail(o);
+    $('#progEdit').onclick = () => editProgress(o);
+  }
+  if (curTab === 'anchor') {
+    b.innerHTML = '<div class="anchors">' + (o.anchors || []).map((a, i) =>
+      '<div class="anchor"><div class="im" data-img="' + (a.img || '') + '">' + (a.img ? '' : '🖼') + '</div>' +
+      '<div class="tx"><b>' + esc(a.title || '锚点') + '</b><span>' + esc(a.text || '') + '</span></div></div>').join('') +
+      '<div class="anchor add" id="anchorAdd">＋</div></div>' +
+      '<p class="tiny" style="margin-top:10px">锚点 = 钉死角色特征的图 + 一句话（瞳色、发色、疤痕、服装细节），画图时对照用。</p>';
+    $('#anchorAdd').onclick = () => addAnchor();
+    $$('#tabBody .im[data-img]').forEach(el => { const id = el.dataset.img; if (id) urlOf(id).then(u => { if (u) el.style.backgroundImage = 'url("' + u + '")'; }); });
+    $$('#tabBody .anchor[data-i]').forEach(() => {});
+  }
+  if (curTab === 'photo') {
+    b.innerHTML = '<div class="grid3">' + (o.photos || []).map((p, i) => '<div class="ph3" data-i="' + i + '"><button class="x" data-del="' + i + '">✕</button></div>').join('') +
+      '<div class="addtile" id="photoAdd">＋</div></div>' +
+      '<p class="tiny" style="margin-top:10px">这只 OC 的单人图。多人合拍放「合集」里。</p>';
+    $('#photoAdd').onclick = () => pickImage(async bs => { for (const x of bs) { const id = await saveImage(x); (o.photos = o.photos || []).push({ id: id }); } save(); renderTab(); toast('已添加'); }, true);
+    $$('#tabBody .ph3[data-i]').forEach(el => { const p = o.photos[+el.dataset.i]; urlOf(p.id).then(u => { if (u) el.style.backgroundImage = 'url("' + u + '")'; }); });
+    $$('#tabBody [data-del]').forEach(btn => btn.onclick = e => { e.stopPropagation(); const i = +btn.dataset.del; const p = o.photos[i]; mediaDel(p.id).catch(() => {}); o.photos.splice(i, 1); save(); renderTab(); });
+  }
+  if (curTab === 'article') {
+    const arts = S.articles.filter(a => a.ocId === o.id);
+    b.innerHTML = '<div class="spread" style="margin-bottom:6px"><span class="tiny">同人文 / OC 小说</span><button class="btn" id="artAdd">＋ 新建文章</button></div>' +
+      (arts.length ? arts.map(a => {
+        const ch = a.chapters.length ? a.chapters[a.chapters.length - 1] : null;
+        const wc = a.chapters.reduce((n, c) => n + (c.text || '').length, 0);
+        return '<div class="post" data-id="' + a.id + '"><div class="pt">📖</div><div class="pi"><b>' + esc(a.title) + '</b>' +
+          '<div class="tiny">' + a.chapters.length + ' 章 · ' + wc + ' 字 · ' + (ch ? fmtD(ch.updatedAt || a.updatedAt) : '') + '</div></div>' +
+          '<span class="tag">' + (a.status || '草稿') + '</span></div>';
+      }).join('') : '<div class="empty">还没有文章</div>');
+    $('#artAdd').onclick = () => newArticle(o.id);
+    $$('#tabBody .post').forEach(el => el.onclick = () => openArticle(el.dataset.id));
+  }
+  if (curTab === 'rel') {
+    const w = S.worlds.find(x => x.id === o.worldId);
+    const rels = S.relations.filter(r => r.a === o.id || r.b === o.id);
+    b.innerHTML = (w ? '<button class="btn block" id="openNet" style="margin-top:0">打开「' + esc(w.name) + '」关系网</button>' : '<p class="tiny">这只 OC 还没归属世界，关系网按世界共享。</p>') +
+      '<div style="margin-top:10px">' + rels.map(r => {
+        const other = S.ocs.find(x => x.id === (r.a === o.id ? r.b : r.a));
+        const arrow = r.type === 'both' ? '↔' : r.type === 'broken' ? '┄' : '→';
+        return '<div class="post"><div class="pt">' + arrow + '</div><div class="pi"><b>' + esc(other ? other.name : '?') + '</b><div class="tiny">' + esc(r.label || '') + ' · ' + (r.type === 'both' ? '互相' : r.type === 'broken' ? '已决裂' : '单向') + '</div></div></div>';
+      }).join('') || '<div class="empty">还没有关系</div></div>';
+    if (w) $('#openNet').onclick = () => openNet(w.id);
+  }
+  if (curTab === 'time') {
+    b.innerHTML = '<div class="spread" style="margin-bottom:6px"><span class="tiny">这只 OC 自己的时间线</span><button class="btn" id="tlAdd">＋ 添加</button></div>' +
+      ((o.timeline || []).length ? '<div class="tl">' + o.timeline.map((t, i) => '<div class="tli"><div class="e">' + esc(t.date || '') + '</div><div class="d">' + esc(t.title || '') +
+        (t.desc ? '<div class="tiny">' + esc(t.desc) + '</div>' : '') + '</div><button class="x" data-i="' + i + '">删</button></div>').join('') + '</div>' : '<div class="empty">还没有记录</div>');
+    $('#tlAdd').onclick = () => addTimeline(o);
+    $$('#tabBody .tli .x').forEach(btn => btn.onclick = () => { o.timeline.splice(+btn.dataset.i, 1); save(); renderTab(); });
+  }
+  if (curTab === 'pub') {
+    b.innerHTML = '<div class="spread" style="margin-bottom:6px"><span class="tiny">发布到过哪些平台</span><button class="btn" id="pubAdd">＋ 添加</button></div>' +
+      ((o.publish || []).length ? o.publish.map((p, i) => '<div class="post"><div class="pt">📮</div><div class="pi"><b>' + esc(p.platform) + '</b>' +
+        '<div class="tiny">' + esc(p.date || '') + (p.note ? ' · ' + esc(p.note) : '') + '</div></div>' +
+        (p.url ? '<a class="tiny" href="' + esc(p.url) + '" target="_blank" style="color:var(--accent)">链接</a>' : '') +
+        '<button class="x" data-i="' + i + '" style="border:0;background:transparent;color:var(--sub)">删</button></div>').join('') : '<div class="empty">还没有发布记录</div>');
+    $('#pubAdd').onclick = () => addPublish(o);
+    $$('#tabBody .post .x').forEach(btn => btn.onclick = () => { o.publish.splice(+btn.dataset.i, 1); save(); renderTab(); });
+  }
+}
+
+function ocMenu() {
+  const o = curOC;
+  openSheet('<div class="sh"><b>' + esc(o.name) + '</b><button class="ib" data-x="1">✕</button></div>' +
+    '<button class="btn block" id="mEdit">编辑基本信息</button>' +
+    '<button class="btn block" id="mDel">删除这只 OC</button>' +
+    '<button class="btn block" id="mCard">导出资料卡</button>' +
+    '<button class="btn block" id="mHist">查看修改记录</button>');
+  $('#mEdit').onclick = () => { closeSheet(); editOC(o.id); };
+  $('#mCard').onclick = () => { closeSheet(); exportCard(o); };
+  $('#mHist').onclick = () => { closeSheet(); showHistory(o.id); };
+  $('#mDel').onclick = () => {
+    if (!confirm('删除「' + o.name + '」？')) return;
+    S.ocs = S.ocs.filter(x => x.id !== o.id);
+    S.relations = S.relations.filter(r => r.a !== o.id && r.b !== o.id);
+    S.articles = S.articles.filter(a => a.ocId !== o.id);
+    log('删除 OC「' + o.name + '」');
+    save(); closeSheet(); closePage(); renderOC();
+  };
+}
+
+function editDetail(o) {
+  openSheet('<div class="sh"><b>资料</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>简介</label><textarea class="inp" id="dBio">' + esc(o.bio) + '</textarea></div>' +
+    '<div class="f"><label>详细设定</label><textarea class="inp" id="dDetail" style="min-height:120px">' + esc(o.detail) + '</textarea></div>' +
+    '<button class="btn solid block" id="dSave">保存</button>');
+  $('#dSave').onclick = () => {
+    o.bio = $('#dBio').value; o.detail = $('#dDetail').value; o.updatedAt = Date.now();
+    log('编辑「' + o.name + '」的简介/设定', o.id);
+    save(); closeSheet(); renderTab();
+  };
+}
+function editProgress(o) {
+  const rows = [['model', '三视图'], ['art', '人物立绘'], ['life', '人生经历'], ['detail', '详细设定']];
+  openSheet('<div class="sh"><b>完成进度</b><button class="ib" data-x="1">✕</button></div>' +
+    rows.map(r => '<div class="f"><label>' + r[1] + '：<span id="pv_' + r[0] + '">' + (o.prog[r[0]] || 0) + '</span>%</label>' +
+      '<input type="range" min="0" max="100" step="5" value="' + (o.prog[r[0]] || 0) + '" data-k="' + r[0] + '" class="rng" style="width:100%"></div>').join('') +
+    '<button class="btn solid block" id="pgSave">保存</button>');
+  $$('#sheet .rng').forEach(inp => inp.oninput = () => { $('#pv_' + inp.dataset.k).textContent = inp.value; });
+  $('#pgSave').onclick = () => {
+    $$('#sheet .rng').forEach(inp => { o.prog[inp.dataset.k] = +inp.value; });
+    o.updatedAt = Date.now(); log('更新「' + o.name + '」的完成进度', o.id);
+    save(); closeSheet(); renderTab(); renderOC();
+  };
+}
+function addAnchor() {
+  openSheet('<div class="sh"><b>新建锚点</b><button class="ib" data-x="1">✕</button></div>' +
+    '<button class="btn block" id="anImg">📷 选一张图</button>' +
+    '<div class="f"><label>标题</label><input class="inp" id="anTitle" placeholder="银瞳 · 左眼"></div>' +
+    '<div class="f"><label>说明</label><input class="inp" id="anText" placeholder="失明后变成银色"></div>' +
+    '<button class="btn solid block" id="anSave">保存</button>');
+  let img = '';
+  $('#anImg').onclick = () => pickImage(async bs => { img = await saveImage(bs[0]); toast('图已选好'); }, false);
+  $('#anSave').onclick = () => {
+    (curOC.anchors = curOC.anchors || []).push({ id: uid(), img: img, title: $('#anTitle').value.trim(), text: $('#anText').value.trim() });
+    log('给「' + curOC.name + '」加锚点', curOC.id);
+    save(); closeSheet(); renderTab();
+  };
+}
+function addTimeline(o) {
+  openSheet('<div class="sh"><b>添加年表</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>时间</label><input class="inp" id="tlDate" placeholder="星历 1089 · 7 岁"></div>' +
+    '<div class="f"><label>发生了什么</label><input class="inp" id="tlTitle"></div>' +
+    '<div class="f"><label>补充</label><textarea class="inp" id="tlDesc"></textarea></div>' +
+    '<button class="btn solid block" id="tlSave">保存</button>');
+  $('#tlSave').onclick = () => {
+    (o.timeline = o.timeline || []).push({ id: uid(), date: $('#tlDate').value.trim(), title: $('#tlTitle').value.trim(), desc: $('#tlDesc').value.trim() });
+    log('给「' + o.name + '」加年表', o.id); save(); closeSheet(); renderTab();
+  };
+}
+function addPublish(o) {
+  openSheet('<div class="sh"><b>发布记录</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>平台</label><input class="inp" id="pbPlatform" placeholder="LOFTER / 微博 / 小红书"></div>' +
+    '<div class="f"><label>日期</label><input class="inp" type="date" id="pbDate" value="' + TODAY() + '"></div>' +
+    '<div class="f"><label>链接（可空）</label><input class="inp" id="pbUrl" placeholder="https://"></div>' +
+    '<div class="f"><label>备注</label><input class="inp" id="pbNote" placeholder="发了什么"></div>' +
+    '<button class="btn solid block" id="pbSave">保存</button>');
+  $('#pbSave').onclick = () => {
+    const p = $('#pbPlatform').value.trim(); if (!p) return toast('写个平台名');
+    (o.publish = o.publish || []).push({ id: uid(), platform: p, date: $('#pbDate').value, url: $('#pbUrl').value.trim(), note: $('#pbNote').value.trim() });
+    log('给「' + o.name + '」记录发布：' + p, o.id); save(); closeSheet(); renderTab();
+  };
+}
+
+/* ============ 文章 ============ */
+function newArticle(ocId) {
+  openSheet('<div class="sh"><b>新建文章</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>标题</label><input class="inp" id="aTitle" placeholder="《月蚀之夜》"></div>' +
+    '<button class="btn solid block" id="aSave">创建</button>');
+  $('#aSave').onclick = () => {
+    const t = $('#aTitle').value.trim(); if (!t) return toast('写个标题');
+    const a = { id: uid(), ocId: ocId, title: t, status: '草稿', chapters: [{ id: uid(), title: '第 1 章', text: '', updatedAt: Date.now() }], createdAt: Date.now(), updatedAt: Date.now() };
+    S.articles.push(a); log('新建文章「' + t + '」', ocId);
+    save(); closeSheet(); openArticle(a.id);
+  };
+}
+function openArticle(id) {
+  const a = S.articles.find(x => x.id === id); if (!a) return;
+  let ci = 0;
+  const draw = () => {
+    const ch = a.chapters[ci];
+    openPage('<div class="ph"><button class="ib" id="aBack">‹</button><div class="tt">' + esc(a.title) + '</div><button class="ib" id="aMore">⋯</button></div>' +
+      '<div class="pb">' +
+      '<div class="chips">' + a.chapters.map((c, i) => '<button class="chip' + (i === ci ? ' on' : '') + '" data-i="' + i + '">' + esc(c.title) + '</button>').join('') +
+      '<button class="chip" id="chAdd">＋</button></div>' +
+      '<input class="inp" id="chTitle" value="' + esc(ch.title) + '" style="margin:8px 0">' +
+      '<textarea class="inp" id="chText" style="min-height:46vh" placeholder="开始写…">' + esc(ch.text) + '</textarea>' +
+      '<div class="spread" style="margin-top:8px"><span class="tiny" id="wc">' + (ch.text || '').length + ' 字 · 自动保存</span>' +
+      '<button class="btn" id="chDel">删除本章</button></div></div>');
+    const ta = $('#chText');
+    ta.oninput = () => { ch.text = ta.value; ch.updatedAt = Date.now(); a.updatedAt = Date.now(); $('#wc').textContent = ta.value.length + ' 字 · 自动保存'; save(); };
+    $('#chTitle').oninput = () => { ch.title = $('#chTitle').value; a.updatedAt = Date.now(); save(); };
+    $('#aBack').onclick = () => { closePage(); renderOC(); };
+    $('#aMore').onclick = () => {
+      openSheet('<div class="sh"><b>文章</b><button class="ib" data-x="1">✕</button></div>' +
+        '<button class="btn block" id="stDraft">标记为草稿</button><button class="btn block" id="stOngoing">标记为连载中</button>' +
+        '<button class="btn block" id="stDone">标记为完成</button><button class="btn danger block" id="stDel">删除整篇</button>');
+      $('#stDraft').onclick = () => { a.status = '草稿'; save(); closeSheet(); };
+      $('#stOngoing').onclick = () => { a.status = '连载中'; save(); closeSheet(); };
+      $('#stDone').onclick = () => { a.status = '完成'; save(); closeSheet(); };
+      $('#stDel').onclick = () => { if (!confirm('删除整篇？')) return; S.articles = S.articles.filter(x => x.id !== id); save(); closeSheet(); closePage(); renderTab(); };
+    };
+    $$('.chips .chip[data-i]').forEach(b => b.onclick = () => { ci = +b.dataset.i; draw(); });
+    $('#chAdd').onclick = () => { a.chapters.push({ id: uid(), title: '第 ' + (a.chapters.length + 1) + ' 章', text: '', updatedAt: Date.now() }); ci = a.chapters.length - 1; save(); draw(); };
+    $('#chDel').onclick = () => { if (a.chapters.length < 2) return toast('至少留一章'); if (!confirm('删除本章？')) return; a.chapters.splice(ci, 1); ci = 0; save(); draw(); };
+  };
+  draw();
+}
+
+/* ============ 关系网 ============ */
+let selNode = null;
+function openNet(worldId) {
+  const w = S.worlds.find(x => x.id === worldId);
+  const nodes = S.ocs.filter(o => o.worldId === worldId);
+  nodes.forEach((n, i) => {
+    if (n.nx == null) {
+      const a = -Math.PI / 2 + i * 2 * Math.PI / Math.max(nodes.length, 3);
+      n.nx = 0.5 + 0.30 * Math.cos(a);
+      n.ny = 0.5 + 0.32 * Math.sin(a);
+    }
+  });
+  let rels = S.relations.filter(r => r.worldId === worldId);
+  openPage('<div class="ph"><button class="ib" id="nBack">‹</button><div class="tt">关系网 · ' + esc(w ? w.name : '') + '</div><button class="ib" id="nHelp">?</button></div>' +
+    '<div class="pb"><div class="net" id="net"><canvas class="netcv" id="netcv"></canvas></div>' +
+    '<p class="tiny" style="margin-top:8px">点一个 OC 再点另一个 → 建立关系；拖动可移动位置。</p>' +
+    '<div class="tl" id="relList" style="margin-top:10px"></div></div>');
+  $('#nBack').onclick = () => { closePage(); save(); renderOC(); };
+  $('#nHelp').onclick = () => toast('点两个头像建立关系；箭头可设单向/双向/决裂');
+
+  const net = $('#net'), cvs = $('#netcv');
+  const drawEdges = () => {
+    const W = net.clientWidth, H = net.clientHeight;
+    if (!W) return;
+    cvs.width = W * 2; cvs.height = H * 2;
+    const c = cvs.getContext('2d');
+    c.setTransform(2, 0, 0, 2, 0, 0); c.clearRect(0, 0, W, H);
+    const R = 26;
+    const head = (x, y, a, col) => {
+      c.fillStyle = col; c.beginPath(); c.moveTo(x, y);
+      c.lineTo(x - 9 * Math.cos(a - .36), y - 9 * Math.sin(a - .36));
+      c.lineTo(x - 9 * Math.cos(a + .36), y - 9 * Math.sin(a + .36));
+      c.closePath(); c.fill();
+    };
+    rels.forEach(r => {
+      const A = S.ocs.find(o => o.id === r.a), B = S.ocs.find(o => o.id === r.b);
+      if (!A || !B) return;
+      let x1 = A.nx * W, y1 = A.ny * H, x2 = B.nx * W, y2 = B.ny * H;
+      const ang = Math.atan2(y2 - y1, x2 - x1);
+      x1 += Math.cos(ang) * R; y1 += Math.sin(ang) * R; x2 -= Math.cos(ang) * R; y2 -= Math.sin(ang) * R;
+      const col = r.type === 'both' ? '#ff8ab8' : r.type === 'broken' ? '#bdb2de' : '#9d86e8';
+      c.strokeStyle = col; c.lineWidth = 1.8;
+      c.setLineDash(r.type === 'broken' ? [5, 4] : []);
+      c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); c.setLineDash([]);
+      head(x2, y2, ang, col);
+      if (r.type === 'both') head(x1, y1, ang + Math.PI, col);
+      if (r.label) {
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        c.font = '11px sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        const tw = c.measureText(r.label).width;
+        c.fillStyle = 'rgba(255,255,255,.95)';
+        const bw = tw + 12, bh = 18, bx = mx - bw / 2, by = my - bh / 2, rr = 8;
+        c.beginPath(); c.moveTo(bx + rr, by); c.arcTo(bx + bw, by, bx + bw, by + bh, rr); c.arcTo(bx + bw, by + bh, bx, by + bh, rr); c.arcTo(bx, by + bh, bx, by, rr); c.arcTo(bx, by, bx + bw, by, rr); c.closePath(); c.fill();
+        c.fillStyle = '#6b53c9'; c.fillText(r.label, mx, my + .5);
+      }
+    });
+  };
+  const renderNodes = () => {
+    $$('#net .nd').forEach(e => e.remove());
+    nodes.forEach(n => {
+      const el = document.createElement('div');
+      el.className = 'nd' + (selNode === n.id ? ' sel' : '');
+      el.style.left = (n.nx * 100) + '%';
+      el.style.top = (n.ny * 100) + '%';
+      el.innerHTML = '<div class="c" style="background:linear-gradient(135deg,' + n.color + ',rgba(255,255,255,.4))">' + (n.avatar ? '' : '🌙') + '</div><div class="n">' + esc(n.name) + '</div>';
+      const av = el.querySelector('.c');
+      if (n.avatar) urlOf(n.avatar).then(u => { if (u) av.style.backgroundImage = 'url("' + u + '")'; });
+      enableDrag(el, n);
+      net.appendChild(el);
+    });
+  };
+  const drawList = () => {
+    $('#relList').innerHTML = rels.length ? rels.map((r, i) => {
+      const A = S.ocs.find(o => o.id === r.a), B = S.ocs.find(o => o.id === r.b);
+      const sym = r.type === 'both' ? '↔' : r.type === 'broken' ? '┄' : '→';
+      return '<div class="tli"><div class="e">' + esc(A ? A.name : '?') + ' ' + sym + ' ' + esc(B ? B.name : '?') + '</div>' +
+        '<div class="d">' + esc(r.label || '（没写关系）') + ' <button class="x" data-i="' + i + '">删</button></div></div>';
+    }).join('') : '<div class="tiny">还没有关系</div>';
+    $$('#relList .x').forEach(b => b.onclick = () => {
+      const r = rels.splice(+b.dataset.i, 1)[0];
+      if (r) S.relations = S.relations.filter(x => x.id !== r.id);
+      save(); drawEdges(); drawList();
+    });
+  };
+  const enableDrag = (el, n) => {
+    let startX = 0, startY = 0, ox = 0, oy = 0, moved = false;
+    el.onpointerdown = e => {
+      e.preventDefault();
+      moved = false; startX = e.clientX; startY = e.clientY; ox = n.nx; oy = n.ny;
+      el.setPointerCapture(e.pointerId);
+      el.onpointermove = ev => {
+        const dx = (ev.clientX - startX) / net.clientWidth, dy = (ev.clientY - startY) / net.clientHeight;
+        if (Math.abs(dx) + Math.abs(dy) > 0.012) moved = true;
+        n.nx = Math.max(.08, Math.min(.92, ox + dx)); n.ny = Math.max(.1, Math.min(.9, oy + dy));
+        el.style.left = (n.nx * 100) + '%'; el.style.top = (n.ny * 100) + '%';
+        drawEdges();
+      };
+      el.onpointerup = () => {
+        el.onpointermove = null; el.onpointerup = null;
+        if (moved) { save(); }
+        else tapNode(n);
+      };
+    };
+  };
+  const tapNode = n => {
+    if (!selNode) { selNode = n.id; renderNodes(); drawEdges(); toast('已选 ' + n.name + '，再点一个建立关系'); return; }
+    if (selNode === n.id) { selNode = null; renderNodes(); return; }
+    const a = selNode, b = n.id; selNode = null;
+    openSheet('<div class="sh"><b>建立关系</b><button class="ib" data-x="1">✕</button></div>' +
+      '<div class="f"><label>关系文字（显示在箭头上）</label><input class="inp" id="rLabel" placeholder="师徒 / 同伴 / 单恋"></div>' +
+      '<div class="f"><label>方向</label><select class="inp" id="rType"><option value="one">单向 →（A 对 B）</option><option value="both">互相 ↔</option><option value="broken">已决裂 ┄</option></select></div>' +
+      '<button class="btn solid block" id="rSave">保存</button>');
+    $('#rSave').onclick = () => {
+      const rel = { id: uid(), a: a, b: b, type: $('#rType').value, label: $('#rLabel').value.trim(), worldId: worldId };
+      S.relations.push(rel); rels.push(rel);
+      log('建立关系：' + (rel.label || ''), a);
+      save(); closeSheet(); renderNodes(); drawEdges(); drawList();
+    };
+  };
+  renderNodes(); drawEdges(); drawList();
+  window.addEventListener('resize', drawEdges, { once: true });
+}
+
+/* ============ 合集 ============ */
+function renderAlbums() {
+  const box = $('#albumList');
+  if (!S.albums.length) { box.innerHTML = '<div class="empty">还没有合集</div>'; return; }
+  box.innerHTML = S.albums.map(a => '<div class="occard" style="margin-bottom:10px" data-id="' + a.id + '">' +
+    '<div class="av" data-cover="' + (a.photos[0] || '') + '" style="height:104px">🖼</div>' +
+    '<div class="info"><div class="nm">' + esc(a.name) + '</div><div class="sub">' + a.photos.length + ' 张 · ' + fmtD(a.updatedAt || a.createdAt) + ' 更新</div></div></div>').join('');
+  $$('#albumList .occard').forEach(c => c.onclick = () => openAlbum(c.dataset.id));
+  $$('#albumList .av[data-cover]').forEach(el => { const id = el.dataset.cover; if (id) urlOf(id).then(u => { if (u) { el.style.backgroundImage = 'url("' + u + '")'; el.textContent = ''; } }); });
+}
+function openAlbum(id) {
+  const a = S.albums.find(x => x.id === id); if (!a) return;
+  const draw = () => openPage('<div class="ph"><button class="ib" id="alBack">‹</button><div class="tt">' + esc(a.name) + '</div><button class="ib" id="alMore">⋯</button></div>' +
+    '<div class="pb"><div class="grid3">' + a.photos.map((p, i) => '<div class="ph3" data-i="' + i + '"><button class="x" data-del="' + i + '">✕</button></div>').join('') +
+    '<div class="addtile" id="alAdd">＋</div></div>' +
+    '<p class="tiny" style="margin-top:10px">' + a.photos.length + ' 张 · 创建 ' + fmtD(a.createdAt) + '</p></div>');
+  $('#alBack').onclick = () => { closePage(); renderAlbums(); };
+  $('#alMore').onclick = () => renameAlbum(a);
+  $('#alAdd').onclick = () => pickImage(async bs => { for (const x of bs) { a.photos.push(await saveImage(x)); } a.updatedAt = Date.now(); log('合集「' + a.name + '」加图', a.id); save(); renderAlbums(); draw(); }, true);
+  $$('#page .ph3').forEach(el => { const p = a.photos[+el.dataset.i]; urlOf(p).then(u => { if (u) el.style.backgroundImage = 'url("' + u + '")'; }); });
+  $$('#page [data-del]').forEach(b => b.onclick = () => { const i = +b.dataset.del; mediaDel(a.photos[i]).catch(() => {}); a.photos.splice(i, 1); a.updatedAt = Date.now(); save(); draw(); });
+}
+function renameAlbum(a) {
+  openSheet('<div class="sh"><b>合集设置</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>名字</label><input class="inp" id="alName" value="' + esc(a.name) + '"></div>' +
+    '<button class="btn solid block" id="alSave">保存</button><button class="btn danger block" id="alDel">删除合集</button>');
+  $('#alSave').onclick = () => { a.name = $('#alName').value.trim() || a.name; a.updatedAt = Date.now(); log('重命名合集为「' + a.name + '」', a.id); save(); closeSheet(); renderAlbums(); openAlbum(a.id); };
+  $('#alDel').onclick = () => { if (!confirm('删除合集？图片会一起删掉。')) return; a.photos.forEach(p => mediaDel(p).catch(() => {})); S.albums = S.albums.filter(x => x.id !== a.id); save(); closeSheet(); closePage(); renderAlbums(); };
+}
+
+/* ============ 换衣间 ============ */
+const CATS = ['背景', '身体', '发型', '眼睛', '嘴巴', '服装', '配饰'];
+let curCat = '发型';
+function renderDress() {
+  $('#dressCats').innerHTML = CATS.map(c => '<button class="chip' + (c === curCat ? ' on' : '') + '" data-c="' + c + '">' + c + '</button>').join('');
+  $$('#dressCats .chip').forEach(b => b.onclick = () => { curCat = b.dataset.c; renderDress(); });
+  $('#partTitle').textContent = curCat;
+  const parts = S.parts.filter(p => p.cat === curCat);
+  $('#partGrid').innerHTML = (parts.length ? parts.map(p => '<div class="part' + (S.outfit[curCat] === p.id ? ' on' : '') + '" data-id="' + p.id + '" data-img="' + p.img + '"><button class="del" data-del="' + p.id + '">✕</button></div>').join('') : '') +
+    '<div class="part" id="partAddTile">＋</div>';
+  $$('#partGrid .part[data-img]').forEach(el => { urlOf(el.dataset.img).then(u => { if (u) el.style.backgroundImage = 'url("' + u + '")'; }); el.onclick = e => { if (e.target.classList.contains('del')) return; S.outfit[curCat] = el.dataset.id; save(); renderDress(); }; });
+  $$('#partGrid [data-del]').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    const id = b.dataset.del;
+    S.parts = S.parts.filter(x => x.id !== id);
+    if (S.outfit[curCat] === id) delete S.outfit[curCat];
+    mediaDel(id).catch(() => {});
+    save(); renderDress();
+  });
+  $('#partAddTile').onclick = () => pickImage(async bs => { for (const x of bs) { S.parts.push({ id: uid(), cat: curCat, img: await saveImage(x) }); } save(); renderDress(); }, true);
+
+  const cv = $('#dressCanvas');
+  cv.querySelectorAll('img').forEach(i => i.remove());
+  CATS.forEach(c => {
+    const pid = S.outfit[c]; if (!pid) return;
+    const p = S.parts.find(x => x.id === pid); if (!p) return;
+    const im = document.createElement('img');
+    urlOf(p.img).then(u => { if (u) im.src = u; });
+    cv.appendChild(im);
+  });
+}
+async function exportDress() {
+  const c = document.createElement('canvas'); c.width = 1000; c.height = 1200;
+  const ctx = c.getContext('2d'); ctx.fillStyle = 'rgba(0,0,0,0)'; ctx.clearRect(0, 0, 1000, 1200);
+  for (const cat of CATS) {
+    const pid = S.outfit[cat]; if (!pid) continue;
+    const p = S.parts.find(x => x.id === pid); if (!p) continue;
+    const b = await mediaGet(p.img); if (!b) continue;
+    const im = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(b); });
+    ctx.drawImage(im, 0, 0, 1000, 1200);
+  }
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  const id = await saveImage(blob);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '换衣间-' + TODAY() + '.png'; a.click();
+  toast('已保存并下载');
+  return id;
+}
+
+/* ============ 世界观 ============ */
+function renderWorlds() {
+  const box = $('#worldList');
+  if (!S.worlds.length) { box.innerHTML = '<div class="empty">还没有世界</div>'; return; }
+  box.innerHTML = S.worlds.map(w => '<div class="occard" style="margin-bottom:10px" data-id="' + w.id + '">' +
+    '<div class="av" style="height:84px;background:linear-gradient(135deg,' + (w.color || '#7c5cff') + ',rgba(255,255,255,.4))">🌍</div>' +
+    '<div class="info"><div class="nm">' + esc(w.name) + '</div><div class="sub">' + S.ocs.filter(o => o.worldId === w.id).length + ' 只 OC · ' + (w.timeline || []).length + ' 条时间线</div></div></div>').join('');
+  $$('#worldList .occard').forEach(c => c.onclick = () => openWorld(c.dataset.id));
+}
+function newWorld() {
+  openSheet('<div class="sh"><b>新建世界</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>名字</label><input class="inp" id="wName" placeholder="月影大陆"></div>' +
+    '<div class="f"><label>一句话介绍</label><input class="inp" id="wDesc"></div>' +
+    '<button class="btn solid block" id="wSave">创建</button>');
+  $('#wSave').onclick = () => {
+    const n = $('#wName').value.trim(); if (!n) return toast('写个名字');
+    S.worlds.push({ id: uid(), name: n, desc: $('#wDesc').value.trim(), color: COLORS[S.worlds.length % COLORS.length], timeline: [], races: [], places: [], terms: [], photos: [], createdAt: Date.now() });
+    log('新建世界「' + n + '」'); save(); closeSheet(); renderWorlds();
+  };
+}
+function openWorld(id) {
+  const w = S.worlds.find(x => x.id === id); if (!w) return;
+  w.timeline = w.timeline || []; w.races = w.races || []; w.places = w.places || []; w.terms = w.terms || []; w.photos = w.photos || [];
+  let tab = 'time';
+  const draw = () => openPage('<div class="ph"><button class="ib" id="wBack">‹</button><div class="tt">' + esc(w.name) + '</div><button class="ib" id="wNet">🕸</button></div>' +
+    '<div class="pb"><div class="ct">' + [['time', '时间轴'], ['race', '种族'], ['place', '地点'], ['term', '词条'], ['photo', '图片']].map(t => '<button data-t="' + t[0] + '"' + (tab === t[0] ? ' class="on"' : '') + '>' + t[1] + '</button>').join('') + '</div><div id="wBody"></div></div>');
+  const body = () => {
+    const b = $('#wBody');
+    if (tab === 'time') {
+      b.innerHTML = '<div class="spread" style="margin-bottom:6px"><span class="tiny">世界时间线</span><button class="btn" id="wtAdd">＋ 添加</button></div>' +
+        ((w.timeline || []).length ? '<div class="tl">' + w.timeline.map((t, i) => '<div class="tli"><div class="e">' + esc(t.date) + '</div><div class="d">' + esc(t.title) + (t.desc ? '<div class="tiny">' + esc(t.desc) + '</div>' : '') + '</div><button class="x" data-i="' + i + '">删</button></div>').join('') + '</div>' : '<div class="empty">还没有时间线</div>');
+      $('#wtAdd').onclick = () => addListItem(w.timeline, '时间线', [{ k: 'date', l: '时间' }, { k: 'title', l: '发生什么' }, { k: 'desc', l: '补充', t: 'ta' }], () => { body(); });
+      $$('#wBody .tli .x').forEach(x => x.onclick = () => { w.timeline.splice(+x.dataset.i, 1); save(); body(); });
+    }
+    if (tab === 'race' || tab === 'place' || tab === 'term') {
+      const key = tab === 'race' ? 'races' : tab === 'place' ? 'places' : 'terms';
+      const arr = w[key] || (w[key] = []);
+      b.innerHTML = '<div class="spread" style="margin-bottom:6px"><span class="tiny">' + (tab === 'race' ? '种族' : tab === 'place' ? '地点' : '词条') + '</span><button class="btn" id="wrAdd">＋ 添加</button></div>' +
+        (arr.length ? arr.map((r, i) => '<div class="post"><div class="pt">' + (tab === 'race' ? '🧬' : tab === 'place' ? '📍' : '📚') + '</div><div class="pi"><b>' + esc(r.name) + '</b><div class="tiny">' + esc(r.desc || '') + '</div></div><button class="x" data-i="' + i + '" style="border:0;background:transparent;color:var(--sub)">删</button></div>').join('') : '<div class="empty">还没有</div>');
+      $('#wrAdd').onclick = () => addListItem(arr, tab === 'race' ? '种族' : tab === 'place' ? '地点' : '词条', [{ k: 'name', l: '名字' }, { k: 'desc', l: '说明', t: 'ta' }], () => { body(); });
+      $$('#wBody .post .x').forEach(x => x.onclick = () => { arr.splice(+x.dataset.i, 1); save(); body(); });
+    }
+    if (tab === 'photo') {
+      b.innerHTML = '<div class="grid3">' + (w.photos || []).map((p, i) => '<div class="ph3" data-i="' + i + '"><button class="x" data-del="' + i + '">✕</button></div>').join('') + '<div class="addtile" id="wpAdd">＋</div></div>';
+      $('#wpAdd').onclick = () => pickImage(async bs => { for (const x of bs) (w.photos = w.photos || []).push(await saveImage(x)); save(); draw(); body(); }, true);
+      $$('#wBody .ph3').forEach(el => { urlOf(w.photos[+el.dataset.i]).then(u => { if (u) el.style.backgroundImage = 'url("' + u + '")'; }); });
+      $$('#wBody [data-del]').forEach(x => x.onclick = () => { mediaDel(w.photos[+x.dataset.del]).catch(() => {}); w.photos.splice(+x.dataset.del, 1); save(); draw(); body(); });
+    }
+  };
+  draw(); body();
+  $('#wBack').onclick = () => { closePage(); renderWorlds(); };
+  $('#wNet').onclick = () => openNet(w.id);
+  $$('.ct button').forEach(x => x.onclick = () => { tab = x.dataset.t; draw(); body(); });
+}
+function addListItem(arr, title, defs, cb) {
+  openSheet('<div class="sh"><b>添加' + title + '</b><button class="ib" data-x="1">✕</button></div>' +
+    defs.map(d => '<div class="f"><label>' + d.l + '</label>' +
+      (d.t === 'ta' ? '<textarea class="inp" id="li_' + d.k + '"></textarea>' : '<input class="inp" id="li_' + d.k + '">') + '</div>').join('') +
+    '<button class="btn solid block" id="liSave">保存</button>');
+  $('#liSave').onclick = () => {
+    const o = { id: uid() };
+    defs.forEach(d => { const el = $('#li_' + d.k); o[d.k] = el ? el.value.trim() : ''; });
+    arr.push(o); save(); closeSheet(); cb();
+  };
+}
+
+/* ============ 工具 ============ */
+function openTools() {
+  const todo = S.ocs.filter(o => progOf(o) < 100);
+  const files = 0;
+  openPage('<div class="ph"><button class="ib" id="tBack">‹</button><div class="tt">工具</div><button class="ib"></button></div>' +
+    '<div class="pb">' +
+    '<div class="card"><div class="spread"><b style="font-size:15px">待补清单</b><span class="tiny">' + todo.length + ' 只需要补</span></div>' +
+    (todo.length ? todo.map(o => '<div class="post" data-id="' + o.id + '"><div class="pt" style="background:linear-gradient(135deg,' + o.color + ',rgba(255,255,255,.4))">' + (o.avatar ? '' : '🌙') + '</div><div class="pi"><b>' + esc(o.name) + '</b><div class="tiny">缺 ' +
+      [['model', '三视图'], ['art', '立绘'], ['life', '人生'], ['detail', '详细']].filter(p => (o.prog[p[0]] || 0) < 100).map(p => p[1]).join('、') + '</div></div><span class="tag">' + progOf(o) + '%</span></div>').join('') : '<div class="empty">全部完整 🎉</div>') + '</div>' +
+    '<div class="card"><div class="spread" style="margin-bottom:6px"><b style="font-size:15px">数据</b><span class="tiny">' + S.ocs.length + ' 只 OC · ' + S.articles.length + ' 篇文章</span></div>' +
+    '<button class="btn block" id="tBackup">导出备份（含图片）</button>' +
+    '<button class="btn block" id="tImport">从备份恢复</button>' +
+    '<p class="tiny" style="margin:8px 0 0">备份是 .json 文件，可以存网盘、发微信。</p></div>' +
+    '<div class="card"><div class="spread"><span style="font-size:14px">存储模式</span><span class="tag ' + (MEM ? 'warn' : 'ok') + '">' + (MEM ? '兼容 · 图片可能存不住' : '标准') + '</span></div>' +
+    (MEM ? '<button class="btn block" id="retryDb">重试连接（会重新加载）</button>' : '') + '</div>' +
+    '<div class="card"><b style="font-size:15px">历史记录</b><div class="tl" style="margin-top:8px">' +
+    (S.history.slice(0, 40).map(h => '<div class="tli"><div class="e">' + fmtD(h.t) + '</div><div class="d">' + esc(h.text) + '</div></div>').join('') || '<div class="tiny">暂无</div>') + '</div></div>' +
+    '</div>');
+  $('#tBack').onclick = () => { closePage(); };
+  $$('#page .post[data-id]').forEach(p => p.onclick = () => { closePage(); openOC(p.dataset.id); });
+  $('#tBackup').onclick = () => doExport();
+  $('#tImport').onclick = () => $('#fileJson').click();
+  const rb = $('#retryDb'); if (rb) rb.onclick = () => location.reload();
+}
+
+async function doExport() {
+  toast('正在打包…');
+  const keys = await mediaKeys();
+  const media = [];
+  for (const k of keys) { const b = await mediaGet(k); if (b) media.push({ id: k, type: b.type, data: await b64(b) }); }
+  const blob = new Blob([JSON.stringify({ app: '小月亮', v: 1, state: S, media: media })], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '小月亮备份-' + TODAY() + '.json'; a.click();
+  toast('已导出 ' + (blob.size / 1048576).toFixed(1) + 'MB');
+}
+const b64 = blob => new Promise(res => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.readAsDataURL(blob); });
+const unb64 = (s, m) => { const bin = atob(s); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: m || 'application/octet-stream' }); };
+$('#fileJson').onchange = async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const pack = JSON.parse(await f.text());
+    if (!pack.state) throw new Error('格式不对');
+    if (!confirm('恢复备份会覆盖当前数据，确定？')) return;
+    S = Object.assign(DEF(), pack.state);
+    for (const m of (pack.media || [])) { try { await mediaPut(m.id, unb64(m.data, m.type)); } catch (err) {} }
+    await kvPut('main', S); applyTheme(); renderAll(); toast('恢复完成');
+  } catch (err) { toast('恢复失败：' + err.message); }
+};
+
+/* ============ 资料卡导出 ============ */
+async function exportCard(o) {
+  const W = 720, H = 1000;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#f7f5fb'; x.fillRect(0, 0, W, H);
+  x.fillStyle = o.color || '#7c5cff'; x.fillRect(0, 0, W, 190);
+  if (o.cover) { try { const b = await mediaGet(o.cover); if (b) { const im = await imgOf(b); x.drawImage(im, 0, 0, W, 190); } } catch (e) {} }
+  x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(0, 0, W, 190);
+  x.fillStyle = '#fff'; x.font = 'bold 40px sans-serif'; x.fillText(o.name || '', 40, 300);
+  x.font = '20px sans-serif'; x.fillStyle = '#6b6480';
+  x.fillText([o.alias, o.age ? o.age + ' 岁' : '', o.birth].filter(Boolean).join(' · '), 40, 336);
+  let y = 380;
+  x.fillStyle = '#3f3a55'; x.font = '18px sans-serif';
+  (o.keywords || []).slice(0, 6).forEach((k, i) => { x.fillText('#' + k, 40 + i * 100, y); });
+  y += 46;
+  const lines = wrapText(x, o.bio || '（还没有简介）', 640, 18);
+  x.font = '18px sans-serif'; x.fillStyle = '#3f3a55';
+  lines.slice(0, 8).forEach(l => { x.fillText(l, 40, y); y += 30; });
+  y += 16;
+  x.fillStyle = '#8d8aa0'; x.font = '15px sans-serif';
+  ['三视图', '立绘', '人生经历', '详细设定'].forEach((n, i) => {
+    const v = [o.prog.model, o.prog.art, o.prog.life, o.prog.detail][i] || 0;
+    x.fillText(n + ' ' + v + '%', 40 + (i % 2) * 320, y + Math.floor(i / 2) * 34);
+  });
+  x.fillStyle = '#b0a6d4'; x.font = '14px sans-serif'; x.fillText('小月亮 · ' + TODAY(), 40, H - 36);
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (o.name || 'OC') + '-资料卡.png'; a.click();
+  toast('资料卡已导出');
+}
+function imgOf(blob) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(blob); }); }
+function wrapText(ctx, text, maxW, size) {
+  ctx.font = size + 'px sans-serif';
+  const out = []; let line = '';
+  for (const ch of text.replace(/\n/g, ' ')) { if (ctx.measureText(line + ch).width > maxW) { out.push(line); line = ch; } else line += ch; }
+  if (line) out.push(line); return out;
+}
+
+/* ============ 主题设置 ============ */
+const BGS = ['#f7f5fb', '#faf7f2', '#eef3ff', '#edf7f1', '#fdf0f3', '#fff9ec', '#f3f0fb', '#1e2026'];
+function openTheme() {
+  openSheet('<div class="sh"><b>外观</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>主页底色</label><div class="sws" id="thBg">' + BGS.map(c => '<button class="sw' + (S.theme.bg === c ? ' on' : '') + '" style="background:' + c + '" data-c="' + c + '"></button>').join('') + '<input type="color" id="thBgPick" value="' + S.theme.bg + '"></div></div>' +
+    '<div class="f"><label>任务栏 / 主色</label><div class="sws" id="thAc">' + COLORS.map(c => '<button class="sw' + (S.theme.accent === c ? ' on' : '') + '" style="background:' + c + '" data-c="' + c + '"></button>').join('') + '<input type="color" id="thAcPick" value="' + S.theme.accent + '"></div></div>' +
+    '<div class="f"><label>卡片不透明度</label><input type="range" id="thAlpha" min="50" max="100" value="' + Math.round(S.theme.alpha * 100) + '" style="width:100%"></div>' +
+    '<button class="btn block" id="thImg">🖼 用相册图片铺满</button>' +
+    '<button class="btn block" id="thDark">深色模式：' + (S.theme.dark ? '开' : '关') + '</button>' +
+    '<button class="btn solid block" id="thOk">完成</button>');
+  $$('#thBg .sw').forEach(b => b.onclick = () => { S.theme.bg = b.dataset.c; S.theme.dark = b.dataset.c === '#1e2026'; S.theme.bgImg = null; applyTheme(); save(); closeSheet(); openTheme(); });
+  $$('#thAc .sw').forEach(b => b.onclick = () => { S.theme.accent = b.dataset.c; applyTheme(); save(); closeSheet(); openTheme(); });
+  $('#thBgPick').oninput = e => { S.theme.bg = e.target.value; applyTheme(); save(); };
+  $('#thAcPick').oninput = e => { S.theme.accent = e.target.value; applyTheme(); save(); };
+  $('#thAlpha').oninput = e => { S.theme.alpha = e.target.value / 100; applyTheme(); save(); };
+  $('#thImg').onclick = () => pickImage(async bs => { S.theme.bgImg = await saveImage(bs[0]); applyTheme(); save(); toast('背景已更新'); closeSheet(); }, false);
+  $('#thDark').onclick = () => { S.theme.dark = !S.theme.dark; applyTheme(); save(); closeSheet(); openTheme(); };
+  $('#thOk').onclick = closeSheet;
+}
+
+/* ============ 历史 ============ */
+function showHistory(ref) {
+  const rows = S.history.filter(h => h.ref === ref);
+  openSheet('<div class="sh"><b>修改记录</b><button class="ib" data-x="1">✕</button></div>' +
+    (rows.length ? '<div class="tl">' + rows.map(h => '<div class="tli"><div class="e">' + fmtD(h.t) + '</div><div class="d">' + esc(h.text) + '</div></div>').join('') + '</div>' : '<div class="muted">暂无记录</div>'));
+}
+
+/* ============ 视图切换 ============ */
+function showView(v) {
+  ['oc', 'album', 'dress', 'world'].forEach(k => $('#v-' + k).classList.toggle('hidden', k !== v));
+  $$('.tb').forEach(t => t.classList.toggle('on', t.dataset.v === v));
+  if (v === 'album') renderAlbums();
+  if (v === 'dress') renderDress();
+  if (v === 'world') renderWorlds();
+  window.scrollTo(0, 0);
+}
+$$('.tb').forEach(t => t.onclick = () => showView(t.dataset.v));
+$('#btnAdd').onclick = () => {
+  const v = $$('.tb.on')[0].dataset.v;
+  if (v === 'world') return newWorld();
+  if (v === 'album') return newAlbum();
+  if (v === 'dress') return pickImage(async bs => { for (const x of bs) S.parts.push({ id: uid(), cat: curCat, img: await saveImage(x) }); save(); renderDress(); }, true);
+  editOC(null);
+};
+$('#btnTools').onclick = openTools;
+$('#albumAdd').onclick = newAlbum;
+$('#worldAdd').onclick = newWorld;
+function newAlbum() {
+  openSheet('<div class="sh"><b>新建合集</b><button class="ib" data-x="1">✕</button></div>' +
+    '<div class="f"><label>名字</label><input class="inp" id="nbName" placeholder="夏日海边 · 三人组"></div>' +
+    '<button class="btn solid block" id="nbSave">创建</button>');
+  $('#nbSave').onclick = () => {
+    const n = $('#nbName').value.trim(); if (!n) return toast('写个名字');
+    S.albums.push({ id: uid(), name: n, photos: [], createdAt: Date.now(), updatedAt: Date.now() });
+    log('新建合集「' + n + '」'); save(); closeSheet(); renderAlbums();
+  };
+}
+
+/* ============ 初始化 ============ */
+function renderAll() { renderOC(); renderAlbums(); renderWorlds(); renderDress(); }
+(async function boot() {
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+  for (let attempt = 1; attempt <= 3 && !DB; attempt++) {
+    try { DB = await withTimeout(openDB(), 8000); }
+    catch (e) {
+      console.warn('数据库打开失败（第 ' + attempt + ' 次）', e);
+      if (attempt === 3) MEM = true; else await wait(600);
+    }
+  }
+  let raw = null;
+  try { raw = DB ? await withTimeout(kvGet('main'), 3000) : null; } catch (e) {}
+  if (raw) S = Object.assign(DEF(), raw);
+  applyTheme(); renderAll();
+  if (MEM) setTimeout(() => toast('本地数据库被限制，已切兼容模式：文字能存，图片可能存不住'), 1200);
+})();
+window.addEventListener('pagehide', () => save());
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){})}</script>
+</body>
+</html>
+
